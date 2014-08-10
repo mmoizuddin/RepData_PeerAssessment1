@@ -1,20 +1,184 @@
-# Reproducible Research: Peer Assessment 1
+---
+title: "Reproducible Research - Peer Assessment 1"
+author: "Muhammad Moiz Uddin"
+date: "Friday, August 08, 2014"
+output: html_document
+---
 
 
-## Loading and preprocessing the data
+Environment Information
+---
+
+```{r myEnv, echo=TRUE}
+        sessionInfo()
+```
+              
+Loading Required Libraries 
+---
+
+``` {r loadlibraries, echo=TRUE}
+        library(knitr)
+        library(downloader)
+        library(plyr)
+        library(ggplot2)
+```
 
 
+Setting base directory
+---
 
-## What is mean total number of steps taken per day?
-
-
-
-## What is the average daily activity pattern?
-
-
-
-## Imputing missing values
+```{r setbasedir, echo=TRUE}
+        if (!file.exists("RepData_PeerAssessment1"))  { dir.create("RepData_PeerAssessment1") } 
+        opts_knit$set(root.dir = "./RepData_PeerAssessment1/")
+```
 
 
+Setting additional directories
+---
 
-## Are there differences in activity patterns between weekdays and weekends?
+```{r additionaldirs, echo=TRUE}
+        if (!file.exists("rawData"))  {dir.create("rawData") }
+```
+
+
+Loading and preprocessing the data
+---
+
+```{r LoadAndProcess_data, echo=TRUE}
+        if (!file.exists("activity.zip"))  
+        { 
+                 fileUrl <- "https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip" 
+                 download(fileUrl,"activity.zip" ,mode="wb")
+        }
+
+        unzip("activity.zip",overwrite = TRUE, exdir = "./rawData")
+        activitydf <- read.csv("./rawData/activity.csv",header = TRUE)
+        activitydf$date <- as.Date(activitydf$date, "%Y-%m-%d")
+        str(activitydf)
+        summary(activitydf)
+```
+
+
+What is mean total number of steps taken per day?
+---
+Make a histogram of the total number of steps taken each day
+
+```{r histSteps_day, echo=TRUE}
+        totalSteps <- ddply(activitydf[complete.cases(activitydf) ,], .(date), summarise, steps = sum(steps))
+        hist(totalSteps$steps, col="blue", main="Histogram of total number of steps per day", xlab="Total steps per day")
+```
+---
+
+Calculate and report the mean and median total number of steps taken per day
+
+```{r meanSteps_day, echo=TRUE}
+        meanSteps       <- mean(totalSteps$steps)
+        medianSteps     <- median(totalSteps$steps)
+        meanSteps
+        medianSteps
+```
+
+
+What is the average daily activity pattern ?
+---
+Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
+
+```{r timeseries_plot, echo=TRUE}
+        # meanSteps_Interval <- ddply(activitydf, .(steps, interval), summarize, meanSteps = mean(steps) )
+        meanSteps_Interval <- ddply(activitydf[complete.cases(activitydf) ,] , .(interval), summarize, steps = mean(steps) )
+       # meanSteps_Interval <- aggregate(steps ~ interval, activitydf, mean )
+        plot(meanSteps_Interval$interval, meanSteps_Interval$steps, type='l', col="blue", main="Average number of steps taken", xlab="Interval",  ylab="Average steps across all days")
+```
+
+Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
+
+
+```{r maxSteps, echo=TRUE}
+        meanSteps_Interval[which.max(meanSteps_Interval$steps), "interval"]
+```
+
+
+Imputing missing values
+---
+
+
+Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
+
+```{r sumMissing, echo=TRUE}
+        sum(is.na(activitydf$steps))
+```
+
+
+Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
+
+* ***To impute the NA values we will use mean 5-minute interval***
+It was observed that several mean steps for each interval for each day are 0 i.e. mean interval of 2012-10-02 (YYYY-MM-DD) is zero; in-addition mean steps for day (excluding inverval) will be too loosely to be fillid in
+
+
+Create a new dataset that is equal to the original dataset but with the missing data imputed in.
+
+New NA imputed dataset is called activityNAImputed
+```{r activityNAImputed, echo=TRUE}
+        activityNAImputed <- activitydf
+        #
+        activityNAImputed$steps[is.na(activityNAImputed$steps)] <- ave(activityNAImputed$steps, activityNAImputed$interval, 
+                                                                   FUN = function(x) 
+                                                                         mean(x, na.rm = TRUE))[c(which(is.na(activityNAImputed$steps)))]
+sum(is.na(activityNAImputed$steps))
+head(activityNAImputed)
+```
+
+
+Make a histogram of the total number of steps taken each day and Calculate
+and report the mean and median total number of steps taken per day. 
+
+Histrogram with imputed missing steps based on mean of 5-minute interval
+
+```{r hist_NAImputedSteps, echo=TRUE}
+        totalStepsNAImputed <- ddply(activityNAImputed, .(date), summarise, steps = sum(steps))
+        hist(totalStepsNAImputed$steps, col="red", main="Missing Data Imputed Histogram of total number of steps per day", xlab="Total steps per day")
+```
+
+```
+
+
+Calculate and report the mean and median total number of steps taken per day with imputed missing steps based on mean of 5-minute interval
+
+```{r mean_NAImputedSteps, echo=TRUE}
+        meanImputed      <- mean(totalStepsNAImputed$steps)
+        medianImputed    <-median(totalStepsNAImputed$steps)
+        meanImputed
+        medianImputed
+```
+
+
+Do these values differ from the estimates from the first part of the assignment? 
+What is the impact of imputing missing data on the estimates of the total daily number of steps?
+
+
+* ***The impact of the missing data nonsignificant, the mean value remains the same whereas there is a slight change in imputed median of `r medianImputed` from orginial `r medianSteps` ***
+
+
+Are there differences in activity patterns between weekdays and weekends?
+---
+
+Dataset with the filled-in missing values "activityNAImputed" used in this part.
+
+
+A new factor variable "dayCase" is created in the dataset with two levels - "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.
+
+```{r dayweek, echo=TRUE}
+        activityNAImputed$dayCase <- ifelse(weekdays(activitydf$date) %in% c("Saturday","Sunday"), "weekend", "weekday")
+```
+
+
+A panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). 
+
+```{r ploting, echo=TRUE}
+        step_interval_dayCase <- ddply(activityNAImputed, .(interval,dayCase), summarise, steps = mean(steps))
+
+        tplot <- ggplot(step_interval_dayCase,aes(interval,steps)) 
+        tplot + geom_line(col="blue") + facet_wrap( ~ dayCase, ncol=1) + labs(x = "Interval", y = "Number of steps")
+```
+
+*The two time series plots above measuring the personal movements on weekdays and weekends. The movement activities started early on weakdays and reached at peak around 0800 and 0900 mainly due to office hours. whereas movements are relaively low on weekends in the said time.*
