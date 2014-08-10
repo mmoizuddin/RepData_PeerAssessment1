@@ -60,7 +60,6 @@ Make a histogram of the total number of steps taken each day
         totalSteps <- ddply(activitydf[complete.cases(activitydf) ,], .(date), summarise, steps = sum(steps))
         hist(totalSteps$steps, col="blue", main="Histogram of total number of steps per day", xlab="Total steps per day")
 ```
----
 
 Calculate and report the mean and median total number of steps taken per day
 
@@ -115,6 +114,8 @@ It was observed that several mean steps for each interval for each day are 0 i.e
 Create a new dataset that is equal to the original dataset but with the missing data imputed in.
 
 New NA imputed dataset is called activityNAImputed
+
+
 ```{r activityNAImputed, echo=TRUE}
         activityNAImputed <- activitydf
         #
@@ -136,7 +137,6 @@ Histrogram with imputed missing steps based on mean of 5-minute interval
         hist(totalStepsNAImputed$steps, col="red", main="Missing Data Imputed Histogram of total number of steps per day", xlab="Total steps per day")
 ```
 
-```
 
 
 Calculate and report the mean and median total number of steps taken per day with imputed missing steps based on mean of 5-minute interval

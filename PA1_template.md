@@ -113,7 +113,6 @@ Make a histogram of the total number of steps taken each day
 ```
 
 ![plot of chunk histSteps_day](figure/histSteps_day.png) 
----
 
 Calculate and report the mean and median total number of steps taken per day
 
@@ -194,6 +193,8 @@ Create a new dataset that is equal to the original dataset but with the missing 
 
 New NA imputed dataset is called activityNAImputed
 
+
+
 ```r
         activityNAImputed <- activitydf
         #
@@ -235,7 +236,6 @@ Histrogram with imputed missing steps based on mean of 5-minute interval
 
 ![plot of chunk hist_NAImputedSteps](figure/hist_NAImputedSteps.png) 
 
-```
 
 
 Calculate and report the mean and median total number of steps taken per day with imputed missing steps based on mean of 5-minute interval
