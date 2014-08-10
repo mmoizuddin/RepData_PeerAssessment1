@@ -292,9 +292,7 @@ hr {
 
 <p>Make a time series plot (i.e. type = &ldquo;l&rdquo;) of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)</p>
 
-<pre><code class="r">        # meanSteps_Interval &lt;- ddply(activitydf, .(steps, interval), summarize, meanSteps = mean(steps) )
-        meanSteps_Interval &lt;- ddply(activitydf[complete.cases(activitydf) ,] , .(interval), summarize, steps = mean(steps) )
-       # meanSteps_Interval &lt;- aggregate(steps ~ interval, activitydf, mean )
+<pre><code class="r">        meanSteps_Interval &lt;- ddply(activitydf[complete.cases(activitydf) ,] , .(interval), summarize, steps = mean(steps) )
         plot(meanSteps_Interval$interval, meanSteps_Interval$steps, type=&#39;l&#39;, col=&quot;blue&quot;, main=&quot;Average number of steps taken&quot;, xlab=&quot;Interval&quot;,  ylab=&quot;Average steps across all days&quot;)
 </code></pre>
 

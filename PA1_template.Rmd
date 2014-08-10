@@ -80,9 +80,8 @@ Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and 
 
 
 ```{r timeseries_plot, echo=TRUE}
-        # meanSteps_Interval <- ddply(activitydf, .(steps, interval), summarize, meanSteps = mean(steps) )
+
         meanSteps_Interval <- ddply(activitydf[complete.cases(activitydf) ,] , .(interval), summarize, steps = mean(steps) )
-       # meanSteps_Interval <- aggregate(steps ~ interval, activitydf, mean )
         plot(meanSteps_Interval$interval, meanSteps_Interval$steps, type='l', col="blue", main="Average number of steps taken", xlab="Interval",  ylab="Average steps across all days")
 ```
 
