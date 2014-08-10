@@ -29,11 +29,14 @@ Environment Information
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] knitr_1.6
+## [1] ggplot2_1.0.0  plyr_1.8.1     downloader_0.3 knitr_1.6     
 ## 
 ## loaded via a namespace (and not attached):
-## [1] digest_0.6.4     evaluate_0.5.5   formatR_0.10     htmltools_0.2.4 
-## [5] rmarkdown_0.2.49 stringr_0.6.2    tools_3.0.3      yaml_2.1.11
+##  [1] colorspace_1.2-4 digest_0.6.4     evaluate_0.5.5   formatR_0.10    
+##  [5] grid_3.0.3       gtable_0.1.2     htmltools_0.2.4  labeling_0.2    
+##  [9] markdown_0.7.2   MASS_7.3-29      mime_0.1.2       munsell_0.4.2   
+## [13] proto_0.3-10     Rcpp_0.11.1      reshape2_1.4     rmarkdown_0.2.49
+## [17] scales_0.2.4     stringr_0.6.2    tools_3.0.3      yaml_2.1.11
 ```
               
 Loading Required Libraries 
@@ -103,6 +106,7 @@ What is mean total number of steps taken per day?
 Make a histogram of the total number of steps taken each day
 
 
+
 ```r
         totalSteps <- ddply(activitydf[complete.cases(activitydf) ,], .(date), summarise, steps = sum(steps))
         hist(totalSteps$steps, col="blue", main="Histogram of total number of steps per day", xlab="Total steps per day")
@@ -112,6 +116,8 @@ Make a histogram of the total number of steps taken each day
 ---
 
 Calculate and report the mean and median total number of steps taken per day
+
+
 
 
 ```r
@@ -136,6 +142,8 @@ Calculate and report the mean and median total number of steps taken per day
 What is the average daily activity pattern ?
 ---
 Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
+
+
 
 
 ```r
